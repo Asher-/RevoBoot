@@ -2,7 +2,7 @@
  * Copyright (c) 1999-2003 Apple Computer, Inc. All rights reserved.
  *
  * @APPLE_LICENSE_HEADER_START@
- * 
+ *
  * Portions Copyright (c) 1999-2003 Apple Computer, Inc.  All Rights
  * Reserved.  This file contains Original Code and/or Modifications of
  * Original Code as defined in and that are subject to the Apple Public
@@ -10,7 +10,7 @@
  * except in compliance with the License.  Please obtain a copy of the
  * License at http://www.apple.com/publicsource and read it before using
  * this file.
- * 
+ *
  * The Original Code and all software distributed under the License are
  * distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
@@ -18,10 +18,10 @@
  * FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
  * License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * @APPLE_LICENSE_HEADER_END@
  */
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1990 Carnegie-Mellon University
  * Copyright (c) 1989 Carnegie-Mellon University
@@ -190,7 +190,7 @@ long LoadThinFatFile(const char *fileSpec, void **binary)
 	{
 		return -1;
 	}
-	
+
 	*binary = (void *)kLoadAddr;
 
 	// Read file into load buffer. The data in the load buffer will be
@@ -378,11 +378,28 @@ long GetFileInfo(const char * dirSpec, const char * name, long * flags, long * t
 		dirSpec = gMakeDirSpec;
 	}
 
+#if DEBUG_BOOT
+	long last_index = index;
+#endif // DEBUG_BOOT
+
 	while (GetDirEntry(dirSpec, &index, &entryName, flags, time) == 0)
 	{
 		if (strcmp(entryName, name) == 0)
 		{
+
+#if DEBUG_BOOT
+			printf("Found %s/%s.\n", dirSpec[last_index], entryName);
+#endif // DEBUG_BOOT
+
 			return 0;	// success
+		}
+		else {
+
+#if DEBUG_BOOT
+			printf("%s not found in %s.\n", entryName, dirSpec[last_index]);
+			last_index = index;
+#endif // DEBUG_BOOT
+
 		}
 	}
 
@@ -447,23 +464,23 @@ int open(const char * path, int flags)
 			{
 				io = &iob[fdesc];
 				bzero(io, sizeof(*io));
-			
+
 				// Mark the descriptor as taken.
 				io->i_flgs = F_ALLOC;
 
 				// Find the next available memory block in the download buffer.
 				io->i_buf = (char *) LOAD_ADDR;
-			
+
 				for (i = 0; i < NFILES; i++)
 				{
 					if ((iob[i].i_flgs != F_ALLOC) || (i == fdesc))
 					{
 						continue;
 					}
-				
+
 					io->i_buf = max(iob[i].i_filesize + iob[i].i_buf, io->i_buf);
 				}
-			
+
 				// Load entire file into memory. Unnecessary open() calls must be avoided.
 				gFSLoadAddress = io->i_buf;
 				io->i_filesize = bvr->fs_loadfile(bvr, (char *)filePath);
@@ -633,7 +650,7 @@ struct dirstuff * opendir(const char * path)
 			if (dirp->dir_path)
 			{
 				dirp->dir_bvr = bvr;
-				
+
 				return dirp;
 			}
 		}
@@ -667,7 +684,7 @@ int closedir(struct dirstuff * dirp)
 
 int readdir(struct dirstuff * dirp, const char ** name, long * flags, long * time)
 {
-	return dirp->dir_bvr->fs_getdirentry(dirp->dir_bvr, 
+	return dirp->dir_bvr->fs_getdirentry(dirp->dir_bvr,
 										 /* dirPath */   dirp->dir_path,
 										 /* dirIndex */  &dirp->dir_index,
 										 /* dirEntry */  (char **)name, flags, time, 0, 0);
@@ -705,8 +722,8 @@ void scanBootVolumes(int biosdev, int * count)
 /*==============================================================================
  * Extracts the volume selector from the pathname, returns the selected BVRef,
  * and sets *outPath to the remainder of the path. If the path did not include
- * a volume selector then the current volume is used.  When called with a volume 
- * selector the current volume is changed to the selected volume unless the 
+ * a volume selector then the current volume is used.  When called with a volume
+ * selector the current volume is changed to the selected volume unless the
  * volume selector is that of a ramdisk.
  */
 
@@ -729,7 +746,7 @@ BVRef getBootVolumeRef(const char * path, const char ** outPath)
 	if (*cp != LP)  // no left paren found
 	{
 		cp = path;
-		// Path is using the implicit current device so if 
+		// Path is using the implicit current device so if
 		// there is no current device, then we must fail.
 		if (gPlatform.RootVolume == NULL)
 		{
@@ -908,7 +925,7 @@ BVRef getTargetRootVolume(char *rootUUID)
 {
 	#define FIRST_HDD_TO_CHECK	0x80
 	#define LAST_HDD_TO_CHECK	0x86	// Limits drive scanning to 6 (top).
-	
+
 	int hdIndex = FIRST_HDD_TO_CHECK;
 
 	while(hdIndex <= LAST_HDD_TO_CHECK)
@@ -917,7 +934,7 @@ BVRef getTargetRootVolume(char *rootUUID)
 		{
 			int _bvCount = 0;
 			scanBootVolumes(hdIndex, &_bvCount);
-		
+
 			if (_bvCount)
 			{
 				BVRef chain = getBVChainForBIOSDev(hdIndex);

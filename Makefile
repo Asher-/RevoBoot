@@ -35,7 +35,36 @@ PAX = /bin/pax
 OBJROOT = `pwd`/obj
 SYMROOT = `pwd`/sym
 
+DATA_FILE = data-template
+
+#
+# Our one and only build target directory.
+#
+
+ARCH_DIR=i386
+
+CONFIG_DIR=$(ARCH_DIR)/config
+
+SETTINGS_DIR=$(CONFIG_DIR)/SETTINGS
+
+GGREP=$(shell which ggrep)
+GREP_MODEL_CMD=${GGREP} -oP '(\#define\s+TARGET_MODEL\s+)\K([A-Za-z0-9_]+)' $(SETTINGS_DIR)/$(CONFIG_ID).h
+MODEL_FROM_SETTINGS=$(shell ${GREP_MODEL_CMD})
+
+KNOWN_MODELS=IMAC_171, IMAC_161, IMAC_162, IMAC_151, IMAC_141, IMAC_142, IMAC_143, IMAC_144, IMAC_131, IMAC_121, IMAC_122, IMAC_111, IMAC, MACBOOK_41, MACBOOKAIR, MACBOOKAIR_42, MACBOOKAIR_41, MACBOOKPRO, MACBOOKPRO_101, MACBOOKPRO_91, MACBOOKPRO_83, MACBOOKPRO_82, MACBOOKPRO_81, MACBOOKPRO_61, MACBOOK, MACMINI_53, MACMINI_52, MACMINI_51, MACMINI, MACPRO_51, MACPRO_41, MACPRO_31, MACPRO
+VERIFY_MODEL_REGEXP=$(shell echo \"${KNOWN_MODELS}\"| sed 's/, /|/g')
+VERIFY_MODEL_REGEXP_CMD=echo ${VERIFY_MODEL_REGEXP} | ${GGREP} -oyP '${MODEL_FROM_SETTINGS}'
+VERIFIED_MODEL=$(shell ${VERIFY_MODEL_REGEXP_CMD})
+
+ifneq ($(VERIFIED_MODEL),)
+MODEL=${VERIFIED_MODEL}
+else
+$(error ${MODEL_FROM_SETTINGS} is not a valid model identifier. Expected one of: ${KNOWN_MODELS})
+endif
+
 DEFAULT_MODEL=$(shell cat MODEL)
+export MAKE_TARGET_CONFIGURATION = $(CONFIG_ID)
+
 
 #
 # Export version number (picked up by i386/libsaio/Makefile)
@@ -128,72 +157,16 @@ export PRODUCT_OS_TARGET_VERSION = `echo \"$(MAKE_TARGET_OS_VER)\"`
 # Check if a target model was specified (example: make MODEL=MacPro61).
 #
 
-ifdef MODEL
-	#
-	# MODEL=[MacModelNN] specified, export target model.
-	#
-	ifneq ($(MODEL),)
-		export MAKE_TARGET_MODEL = $(MODEL)
-		#
-		# Include static ACPI/EFI/SMBIOS data file per model identifier.
-		#
-		DATA_FILE = $(MODEL)
-	else
-		#
-		# No. Use Macmini62 as a fallback default.
-		#
-		MODEL = Macmini62
-		export MAKE_TARGET_MODEL = Macmini62
-		#
-		# Include default/empty static data files (no model identifier specified).
-		#
-		DATA_FILE = data-template
-	endif
-else
-	#
-	# MODEL=[MacModelNN], check if DEFAULT_MODEL was set (first run only).
-	#
-	ifdef DEFAULT_MODEL
-		#
-		# Yes it is. Use Macmodel[nn] from RevoBoot/MODEL
-		#
-		MODEL = $(DEFAULT_MODEL)
-		export MAKE_TARGET_MODEL = $(MODEL)
-		#
-		# Include static ACPI/EFI/SMBIOS data files per model identifier.
-		#
-		DATA_FILE = $(MODEL)
-	else
-		#
-		# No. Use Macmini62 as a fallback default.
-		#
-		MODEL = Macmini62
-		export MAKE_TARGET_MODEL = $(MODEL)
-		#
-		# Include default/empty static data file (no model identifier specified).
-		#
-		DATA_FILE = data-template
-	endif
-endif
-
 #
 # Export target filenames for static ACPI, EFI and SMBIOS data.
-# 
+#
+
 
 export MAKE_ACPI_DATA_FILE = ACPI/$(DATA_FILE).h
 export MAKE_EFI_DATA_FILE = EFI/$(DATA_FILE).h
 export MAKE_SMBIOS_DATA_FILE = SMBIOS/$(DATA_FILE).h
 
-#
-# Our one and only build target directory.
-#
-
-ARCH_DIR=i386
-
-CONFIG_DIR=$(ARCH_DIR)/config
-
-SETTINGS_DIR=$(CONFIG_DIR)/SETTINGS
-SETTINGS_FILE=$(SETTINGS_DIR)/$(MAKE_TARGET_MODEL).h
+SETTINGS_FILE=$(SETTINGS_DIR)/$(MAKE_TARGET_CONFIGURATION).h
 
 $(MAKEGOAL):
 #
@@ -207,12 +180,10 @@ $(MAKEGOAL):
 		echo "\t[RMDIR] $(SYMROOT)" > /dev/null; \
 	fi;
 
-	@rm -rf sym obj dst out.log 
+	@rm -rf sym obj dst out.log
 #
 # normal make goal
 #
-	@printf "\nCompiling RevoBoot, setup for a $(MODEL) running $(OS_TYPE) $(MAKE_TARGET_OS_VER) ($@)\n" >&2;
-
 	@if [ ! -f $(CONFIG_DIR)/$(MAKE_ACPI_DATA_FILE) ]; then \
 		echo "\t[CP] $(CONFIG_DIR)/ACPI/data-template.h $(CONFIG_DIR)/$(MAKE_ACPI_DATA_FILE)"; \
 		cp -n $(CONFIG_DIR)/ACPI/data-template.h $(CONFIG_DIR)/$(MAKE_ACPI_DATA_FILE); \
@@ -238,8 +209,14 @@ $(MAKEGOAL):
 		cp -n $(CONFIG_DIR)/settings-template.h $(SETTINGS_FILE); \
 	fi;
 
+	@echo
+	@printf "Compiling RevoBoot for $(OS_TYPE) $(MAKE_TARGET_OS_VER) ($@).\n" >&2;
+	@echo
+
 	@echo "======================================================";
-	@echo "Running: make MODEL=$(MODEL) $@";
+	@echo
+	@echo "Detected target model ${MODEL} for configuration \"${CONFIG_ID}\" in ${SETTINGS_FILE}.";
+	@echo
 
 	@(OBJROOT=$(OBJROOT)/$(ARCH_DIR); \
 	SYMROOT=$(SYMROOT)/$(ARCH_DIR); \

@@ -18,7 +18,7 @@ LIBSAIODIR = ../libsaio
 OPTIM = -Os -Oz
 CFLAGS	= $(RC_CFLAGS) $(OPTIM) -arch i386 -g -Wmost -Werror \
 		-fno-builtin -static $(OMIT_FRAME_POINTER_CFLAG) \
-		-DSETTINGS_FILE=SETTINGS/$(MAKE_TARGET_MODEL).h \
+		-DSETTINGS_FILE=SETTINGS/$(MAKE_TARGET_CONFIGURATION).h \
 		-fno-stack-protector \
 		-march=pentium4 -msse2 -msoft-float
 

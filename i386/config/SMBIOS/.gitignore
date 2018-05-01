@@ -1,0 +1,13 @@
+#
+# If all files excluded and you will include only specific sub-directories
+# the parent path must matched before.
+#
+# From https://gist.github.com/hieblmedia/9318457.
+
+/**
+!/.gitignore
+
+###############################
+# Un-ignore
+
+!/data-template.h

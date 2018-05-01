@@ -5,7 +5,7 @@
 #
 #			- Major cleanup (PikerAlpha, October 2012).
 #			- Output improvements (PikerAlpha, October 2012).
-#			- PRODUCT_MODEL_TARGET renamed to MAKE_TARGET_MODEL (PikerAlpha, November 2012).
+#			- PRODUCT_MODEL_TARGET renamed to MAKE_TARGET_CONFIGURATION (PikerAlpha, November 2012).
 #			- Cleanup and output changed (PikerAlpha, October 2012).
 #
 

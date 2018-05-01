@@ -4,7 +4,7 @@
 # Updates:
 #
 #			- Major cleanup (Pike R. Alpha, October 2012).
-#			- DMAKE_TARGET_MODEL added (Pike R. Alpha, October 2012).
+#			- DMAKE_TARGET_CONFIGURATION added (Pike R. Alpha, October 2012).
 #			- Static data selectors added (Pike R. Alpha, October 2012).
 #			- STATIC_DATA_FILENAME added (Pike R> Alpha, October 2012).
 #			- Output added for rm/ar/ranlib actions (Pike R> Alpha, November 2012).
@@ -28,8 +28,8 @@ CFLAGS	= $(RC_CFLAGS) $(OPTIM) -arch i386 -g -Wmost \
 		-DREVOBOOT_VERSION_INFO=\"RevoBoot\ v$(PRODUCT_VERSION_NUMBER)\" \
 		-DMAKE_TARGET_OS=$(PRODUCT_OS_TARGET) \
 		-DMAKE_TARGET_OS_VER=$(PRODUCT_OS_TARGET_VERSION) \
-		-DSETTINGS_FILE=SETTINGS/$(MAKE_TARGET_MODEL).h \
-		-DSTATIC_DATA_FILENAME=$(MAKE_TARGET_MODEL).bin \
+		-DSETTINGS_FILE=SETTINGS/$(MAKE_TARGET_CONFIGURATION).h \
+		-DSTATIC_DATA_FILENAME=$(MAKE_TARGET_CONFIGURATION).bin \
 		-DACPI_DATA_FILE=../../config/$(MAKE_ACPI_DATA_FILE) \
 		-DEFI_DATA_FILE=../config/$(MAKE_EFI_DATA_FILE) \
 		-DSMBIOS_DATA_FILE=../config/$(MAKE_SMBIOS_DATA_FILE) \

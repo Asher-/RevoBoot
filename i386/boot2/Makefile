@@ -19,7 +19,7 @@ OPTIM = -Os -Oz
 CFLAGS	= $(RC_CFLAGS) $(OPTIM) $(MORECPP) -arch i386 -g -Wmost -Werror \
 	-fno-builtin -DSAIO_INTERNAL_USER -static $(OMIT_FRAME_POINTER_CFLAG) \
 	-DMAKE_TARGET_OS=$(PRODUCT_OS_TARGET) \
-    	-DSETTINGS_FILE=SETTINGS/$(MAKE_TARGET_MODEL).h \
+    	-DSETTINGS_FILE=SETTINGS/$(MAKE_TARGET_CONFIGURATION).h \
 	-fno-stack-protector \
 	-march=pentium4 -msse2 -msoft-float
 
