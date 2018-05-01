@@ -42,7 +42,7 @@
 ;
 ; This version of boot0 implements hybrid GUID/MBR partition scheme support
 ;
-; Written by Tam‡s Kos‡rszky on 2008-03-10
+; Written by Tamï¿½s Kosï¿½rszky on 2008-03-10
 ;
 ; Turbo added EFI System Partition boot support
 ;
@@ -57,7 +57,7 @@ DEBUG				EQU  0
 ;
 ; Set to 1 to enable verbose mode
 ;
-VERBOSE				EQU  0
+VERBOSE				EQU  1
 
 ;
 ; Various constants.
@@ -298,11 +298,11 @@ find_boot:
     call    print_hex
 %endif
 
-    mov	    eax, [si + part.lba]					; save starting LBA of current 
+    mov	    eax, [si + part.lba]					; save starting LBA of current
     mov	    [my_lba], eax							; MBR partition entry for read_lba function
     cmp     BYTE [si + part.type], 0				; unused partition?
     je      .continue  								; skip to next entry
-    cmp	    BYTE [si + part.type], kPartTypePMBR	; check for Protective MBR 
+    cmp	    BYTE [si + part.type], kPartTypePMBR	; check for Protective MBR
     jne	    .testPass
 
     mov     BYTE [si + part.bootid], kPartInactive	; found Protective MBR
@@ -348,22 +348,22 @@ find_boot:
 
     ;
     ; Scanned all partitions but not found any with active flag enabled
-    ; Anyway if we found a protective MBR before we still have a chance 
+    ; Anyway if we found a protective MBR before we still have a chance
     ; for a possible GPT Header at LBA 1
-    ;    
+    ;
     dec	    bl
     jnz     .switchPass2					; didn't find Protective MBR before
     call    checkGPT
 
 .switchPass2:
     ;
-    ; Switching to Pass 2 
+    ; Switching to Pass 2
     ; try to find a boot1h aware HFS+ MBR partition
     ;
     dec	    bh
     mov	    si, kMBRPartTable				; set SI to first entry of MBR Partition table
     jz      .start_scan						; scan again
-    
+
 .exit:
     ret										; Giving up.
 
@@ -372,7 +372,7 @@ find_boot:
     ; Jump to partition booter. The drive number is already in register DL.
     ; SI is pointing to the modified partition entry.
     ;
-initBootLoader:    
+initBootLoader:
 
 DebugChar('J')
 
@@ -382,8 +382,8 @@ DebugChar('J')
 
     jmp     kBoot0LoadAddr
 
-    
-    ; 
+
+    ;
     ; Found Protective MBR Partition Type: 0xEE
     ; Check for 'EFI PART' string at the beginning
     ; of LBA1 for possible GPT Table Header
@@ -463,7 +463,7 @@ checkGPT:
     ;
 
     mov	    eax, [si + gpta.StartingLBA]			; load boot sector from StartingLBA
-    mov	    [my_lba], eax		
+    mov	    [my_lba], eax
 	mov		dh, 1									; Argument for loadBootSector to check HFS+ partition signature.
     call    loadBootSector
     jne	    .gpt_continue							; no boot loader signature
@@ -471,12 +471,12 @@ checkGPT:
     mov	    si, kMBRPartTable						; fake the current GUID Partition
     mov	    [si + part.lba], eax					; as MBR style partition for boot1h
     mov     BYTE [si + part.type], kPartTypeHFS		; with HFS+ filesystem type (0xAF)
-    jmp	    SHORT initBootLoader    
-    
+    jmp	    SHORT initBootLoader
+
 .gpt_continue:
 
     add	    si, bx									; advance SI to next partition entry
-    loop    .gpt_loop								; loop through all partition entries	
+    loop    .gpt_loop								; loop through all partition entries
 
 .exit:
     pop     bx
@@ -506,7 +506,7 @@ loadBootSector:
 
 	or		dh, dh
 	jz		.checkBootSignature
-	
+
 .checkHFSSignature:
 
 %if VERBOSE
@@ -611,7 +611,7 @@ read_lba:
     mov  eax, ecx
     call print_hex
 %endif
-        
+
     ;
     ; INT13 Func 42 - Extended Read Sectors
     ;
@@ -782,7 +782,7 @@ boot_error_str   	db  'error', 0
 ; that the 'times' argument is negative.
 
 ;
-; According to EFI specification, maximum boot code size is 440 bytes 
+; According to EFI specification, maximum boot code size is 440 bytes
 ;
 
 ;
