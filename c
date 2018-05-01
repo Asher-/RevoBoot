@@ -72,14 +72,17 @@ if [ $volumeNumber -gt $index ];
       then
         echo "Error: Copying boot file failed!"
       else
-        echo ""
-        read -p "Do you want to reboot now (y/n) ?" shouldReboot
-
-        if [ $shouldReboot == "y" ];
+        if [[ $PROMPT_FOR_REBOOT -ne 0 ]]
           then
-            sudo reboot now
-          else
-            echo "Done!"
+            echo ""
+            read -p "Do you want to reboot now (y/n) ?" shouldReboot
+
+            if [ $shouldReboot == "y" ];
+              then
+                sudo reboot now
+              else
+                echo "Done!"
+            fi
         fi
-    fi 
+    fi
 fi
