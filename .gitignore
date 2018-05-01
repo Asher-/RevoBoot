@@ -1,37 +1,21 @@
 .DS_Store
-.git
 
 out.log
 obj/*
 sym/*
 
-i386/boot0/boot0
-i386/boot1/boot1h
-
 i386/config/SETTINGS/*.h
 
-i386/config/ACPI/*.h
-i386/config/EFI/*.h
-i386/config/SMBIOS/*.h
+i386/config/ACPI/default.h
+i386/config/ACPI/*Mac*.h
+i386/config/ACPI/*MAC*.h
+
+i386/config/EFI/default.h
+i386/config/EFI/*Mac*.h
+i386/config/EFI/*MAC*.h
+
+i386/config/SMBIOS/default.h
+i386/config/SMBIOS/*Mac*.h
+i386/config/SMBIOS/*MAC*.h
 
 i386/util/libcc_kext.a
-
-MODEL
-
-xcuserdata
-project.xcworkspace
-
-i386/libsaio/cpu/tools/PMinfo/AppleIntelCPUPowerManagementInfo/secretCode.h
-i386/libsaio/cpu/tools/PMinfo/AppleIntelCPUPowerManagementInfo.xcodeproj/xcuserdata
-i386/libsaio/cpu/tools/PMinfo/AppleIntelCPUPowerManagementInfo.xcodeproj/project.xcworkspace
-
-i386/libsaio/cpu/tools/PMinfoBackup
-
-i386/libsaio/smbios/tools/smbios2struct3
-i386/libsaio/smbios/tools/smbios2struct4
-
-*OLD*
-*BAK*
-*test*
-BACKUP
-
