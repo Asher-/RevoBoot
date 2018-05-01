@@ -36,7 +36,7 @@
 ;
 ; NOTE: this is an experimental version with multiple extent support.
 ;
-; Written by Tamás Kosárszky on 2008-04-14
+; Written by Tamï¿½s Kosï¿½rszky on 2008-04-14
 ;
 
 ;
@@ -52,7 +52,7 @@ UNUSED				EQU		0
 ;
 ; Set to 1 to enable verbose mode.
 ;
-VERBOSE				EQU		0
+VERBOSE				EQU		1
 
 ;
 ; Various constants.
@@ -85,7 +85,7 @@ kBoot2Address		EQU		kSectorBytes						; boot2 load address
 ; giving the size of the structure.
 ;
 			struc part
-.bootid		resb 1		; bootable or not 
+.bootid		resb 1		; bootable or not
 .head		resb 1		; starting head, sector, cylinder
 .sect		resb 1		;
 .cyl		resb 1		;
@@ -1083,7 +1083,7 @@ lookUpBTree:
 .csearchCont:
 	popad
 %endif ; UNUSED
-	
+
 .adjustBounds:
 	je		.checkResult
 	jl		.searchLessThanTrial

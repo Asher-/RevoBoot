@@ -22,7 +22,7 @@ SYMROOT=../i386/sym/i386
 # The build order here is important.
 #
 
-SUBDIRS = util libsa libsaio boot2
+SUBDIRS = boot0 boot1h util libsa libsaio boot2 
 
 
 $(MAKEGOAL):
@@ -30,6 +30,7 @@ $(MAKEGOAL):
 	do \
 		echo ================= RevoBoot/i386/$$i =================; \
 		( cd $$i; ${MAKE} \
+			"WORKINGPATH=`pwd`" \
 			"OBJROOT=$(OBJROOT)/$$i" \
 		  	"SYMROOT=$(SYMROOT)" \
 			"RC_ARCHS=$(RC_ARCHS)" \
